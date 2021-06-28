@@ -5,13 +5,18 @@ struct BB {
 }
 
 impl BB {
+    fn new(board: u32, persp: bool) {
+        let bb = BB {board: 0};
+        bb.set_board(board, persp);
+        bb
+    }
     fn set_bit(self, bit: usize, value: bool, persp: bool) { // persp: perspective player id
         self.board[persp as usize] &= ~(1<< bit);
         self.board[persp as usize] |= value<< bit;
-        self.board[persp as usize] &= ~(1<< bit);
-        self.board[persp as usize] |= value<< (23-bit);
+        self.board[!persp as usize] &= ~(1<< (23-bit));
+        self.board[!persp as usize] |= value<< (23-bit);
     }
-    fn get_bit(self, bit: usize, persp: bool) -> bool {
+    fn bit(self, bit: usize, persp: bool) -> bool {
         (self.board[persp as usize] & 1<< bit) as bool;
     }
     fn set_board(self, board: u32, persp: bool) { // Slow!
@@ -19,13 +24,13 @@ impl BB {
             self.set_bit(bit, (board<< bit), persp)
         }
     }
-    fn get_board(self, persp: bool) -> u32{
+    fn board(self, persp: bool) -> u32{
         return self.board[persp as usize]
     }
     fn clear_board(self) {
-        self.board = {0,0};
+        self.board = [0,0];
     }
     fn enable_board(self) {
-        self.board = {(1<<24) -1, (1<<24) -1};
+        self.board = [(1<<24)-1, (1<<24)-1];
     }
 }
