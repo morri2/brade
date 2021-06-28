@@ -1,7 +1,8 @@
 [package]
 name = "brade"
 version = "0.1.0"
-authors = ["Morris Hansing <morris@hansing.se>"]
+authors = ["Morris Hansing <morris@hansing.se>",
+           "Nils Löfberg <lofebrgnils@gmail.com"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
