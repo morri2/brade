@@ -11,4 +11,11 @@ impl Color{
             Color::White => return Color::Black,
         }
     }
+
+    pub fn index(self) -> usize{
+        match self{
+            Color::Black => return 0,
+            Color::White => return 1,
+        }
+    }
 }
