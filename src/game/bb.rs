@@ -20,7 +20,7 @@ impl BB {
         self.board[persp as usize] & 1<< bit != 0
     }
     pub fn set_board(&mut self, board: u32, persp: bool) { // Slow!
-        for bit in 0..32 {
+        for bit in 0..24 {
             self.set_bit(bit, board<< bit != 0, persp)
         }
     }
