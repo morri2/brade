@@ -1,36 +1,36 @@
-const BB_CLOSEABLE: BB = 0xDEADBEEF;
+pub const BB_CLOSEABLE: u32 = 0xDEADBEEF;
 
-struct BB {
-    board: u32[2] // from p1 and p2 perspective
+pub struct BB {
+    board: [u32; 2], // from p1 and p2 perspective
 }
 
 impl BB {
-    fn new(board: u32, persp: bool) {
-        let bb = BB {board: 0};
+    pub fn new(board: u32, persp: bool) -> Self {
+        let mut bb = BB {board: [0,0]};
         bb.set_board(board, persp);
         bb
     }
-    fn set_bit(self, bit: usize, value: bool, persp: bool) { // persp: perspective player id
-        self.board[persp as usize] &= ~(1<< bit);
-        self.board[persp as usize] |= value<< bit;
-        self.board[!persp as usize] &= ~(1<< (23-bit));
-        self.board[!persp as usize] |= value<< (23-bit);
+    pub fn set_bit(&mut self, bit: usize, value: bool, persp: bool) { // persp: perspective player id
+        self.board[persp as usize] &= !(1<< bit);
+        self.board[persp as usize] |= (value as u32)<< bit;
+        self.board[!persp as usize] &= !(1<< (23-bit));
+        self.board[!persp as usize] |= (value as u32)<< (23-bit);
     }
-    fn bit(self, bit: usize, persp: bool) -> bool {
-        (self.board[persp as usize] & 1<< bit) as bool;
+    pub fn bit(self, bit: usize, persp: bool) -> bool {
+        self.board[persp as usize] & 1<< bit != 0
     }
-    fn set_board(self, board: u32, persp: bool) { // Slow!
+    pub fn set_board(&mut self, board: u32, persp: bool) { // Slow!
         for bit in 0..32 {
-            self.set_bit(bit, (board<< bit), persp)
+            self.set_bit(bit, board<< bit != 0, persp)
         }
     }
-    fn board(self, persp: bool) -> u32{
+    pub fn board(self, persp: bool) -> u32{
         return self.board[persp as usize]
     }
-    fn clear_board(self) {
+    pub fn clear_board(&mut self) {
         self.board = [0,0];
     }
-    fn enable_board(self) {
+    pub fn enable_board(&mut self) {
         self.board = [(1<<24)-1, (1<<24)-1];
     }
 }
