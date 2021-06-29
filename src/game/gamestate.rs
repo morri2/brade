@@ -1,5 +1,6 @@
 
 use super::bb::{BB,BB_CLOSEABLE};
+use super::r#move::*;
 pub type point = usize;
 pub const P1_PERSP: bool = false;
 pub const P2_PERSP: bool = true;
@@ -26,6 +27,26 @@ impl Gamestate {
             bb_color: [BB::new(1,P1_PERSP), BB::new(1,P2_PERSP)],
             bb_singleton: BB::new(0,P1_PERSP),
         }
+    }
+
+    pub fn apply_move(&mut self, _move: Move){
+        for submove in _move.submoves().iter(){
+            self.apply_submove(submove);
+        }
+    }
+
+    pub fn undo_move(&mut self, _move: Move){
+        for submove in _move.submoves().iter().rev(){
+            self.undo_submove(submove);
+        }
+    }
+
+    fn apply_submove(&mut self, submove: &Submove){
+
+    }
+
+    fn undo_submove(&mut self, submove: &Submove){
+
     }
 
 }

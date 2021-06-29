@@ -5,13 +5,15 @@ pub struct Move{
 }
 
 impl Move{
-
+    pub fn submoves(self) -> Vec<Submove> {
+        self.submoves
+    }
 }
 
 pub struct Submove{
     src : Position,
     dest : Position,
-    capture : u8,
+    captured : u8,
 }
 
 impl Submove{
