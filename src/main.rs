@@ -1,7 +1,7 @@
 mod game;
 mod gui;
 
-use game::*;
+use game::gamestate::{Gamestate};
 use gui::*;
 
 fn main() {
