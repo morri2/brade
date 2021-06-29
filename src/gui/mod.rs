@@ -20,14 +20,16 @@ fn cnt_str(n: u8) -> String{
 
 
 pub fn db_disp(b: [u8;24]) {
-   print!("q  w  e  r  t  y  |  u  i  o  p  å  ^ \n
-    {}{}{}{}{}{}|{}{}{}{}{}{}\n
+   print!("    
+    q  w  e  r  t  y  |  u  i  o  p  å  ^ \n
+    {}{}{}{}{}{}|  {}{}{}{}{}{}\n
                       |                 W \n
                       |                   \n
     R                 |                   \n
-    {}{}{}{}{}{}|{}{}{}{}{}{}\n
-    a  s  d  f  g  h  |  j  k  l  ö  ä  *", b[0],b[1],b[2],b[3],b[4],b[5],
-    b[6],b[7],b[8],b[9],b[10],b[11],
-    b[12],b[13],b[14],b[15],b[16],b[17],
-    b[18],b[19],b[20],b[21],b[22],b[23])
+    {}{}{}{}{}{}|  {}{}{}{}{}{}\n
+    a  s  d  f  g  h  |  j  k  l  ö  ä  *", 
+    cnt_str(b[11]), cnt_str(b[10]),cnt_str(b[9]),cnt_str(b[8]),cnt_str(b[7]),cnt_str(b[6]),
+    cnt_str(b[5]), cnt_str(b[4]),cnt_str(b[3]),cnt_str(b[2]),cnt_str(b[1]),cnt_str(b[0]),
+    cnt_str(b[12]),cnt_str(b[13]),cnt_str(b[14]),cnt_str(b[15]),cnt_str(b[16]),cnt_str(b[17]),
+    cnt_str(b[18]),cnt_str(b[19]),cnt_str(b[20]),cnt_str(b[21]),cnt_str(b[22]),cnt_str(b[23]))
 }
