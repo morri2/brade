@@ -10,7 +10,7 @@ a  s  d  f  g  h  |  j  k  l  ö  ä  *
 
 */
 
-fn cnt_str(n: u8) -> String {
+fn marker_count_fmt(n: u8) -> String {
     if n == 0 {
         format!("{:<3}", "#")
     } else {
@@ -18,9 +18,8 @@ fn cnt_str(n: u8) -> String {
     }
 }
 
-pub fn db_disp(b: [u8; 24]) {
-    print!(
-        "    
+pub fn db_disp(board: [u8; 24]) {
+    print!("    BRÄDE!!!!! \n    
     q  w  e  r  t  y  |  u  i  o  p  å  ^ \n
     {}{}{}{}{}{}|  {}{}{}{}{}{}\n
                       |                 W \n
@@ -28,29 +27,29 @@ pub fn db_disp(b: [u8; 24]) {
     R                 |                   \n
     {}{}{}{}{}{}|  {}{}{}{}{}{}\n
     a  s  d  f  g  h  |  j  k  l  ö  ä  *",
-        cnt_str(b[11]),
-        cnt_str(b[10]),
-        cnt_str(b[9]),
-        cnt_str(b[8]),
-        cnt_str(b[7]),
-        cnt_str(b[6]),
-        cnt_str(b[5]),
-        cnt_str(b[4]),
-        cnt_str(b[3]),
-        cnt_str(b[2]),
-        cnt_str(b[1]),
-        cnt_str(b[0]),
-        cnt_str(b[12]),
-        cnt_str(b[13]),
-        cnt_str(b[14]),
-        cnt_str(b[15]),
-        cnt_str(b[16]),
-        cnt_str(b[17]),
-        cnt_str(b[18]),
-        cnt_str(b[19]),
-        cnt_str(b[20]),
-        cnt_str(b[21]),
-        cnt_str(b[22]),
-        cnt_str(b[23])
+        marker_count_fmt(board[11]),
+        marker_count_fmt(board[10]),
+        marker_count_fmt(board[9]),
+        marker_count_fmt(board[8]),
+        marker_count_fmt(board[7]),
+        marker_count_fmt(board[6]),
+        marker_count_fmt(board[5]),
+        marker_count_fmt(board[4]),
+        marker_count_fmt(board[3]),
+        marker_count_fmt(board[2]),
+        marker_count_fmt(board[1]),
+        marker_count_fmt(board[0]),
+        marker_count_fmt(board[12]),
+        marker_count_fmt(board[13]),
+        marker_count_fmt(board[14]),
+        marker_count_fmt(board[15]),
+        marker_count_fmt(board[16]),
+        marker_count_fmt(board[17]),
+        marker_count_fmt(board[18]),
+        marker_count_fmt(board[19]),
+        marker_count_fmt(board[20]),
+        marker_count_fmt(board[21]),
+        marker_count_fmt(board[22]),
+        marker_count_fmt(board[23])
     )
 }
