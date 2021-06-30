@@ -9,6 +9,7 @@ pub struct Gamestate {
     marker_count: [u8; 24],
     bar_count: [u8; 2], // [Player id]
     bb_marker_color: [Bitboard; 2],
+    bb_singleton: Bitboard,
 }
 
 impl Gamestate {
@@ -41,6 +42,33 @@ impl Gamestate {
                 0 // placeholder. Should we have a field for this?
             }
         }
+    }
+
+    pub fn bb_is_occupied(self, persp: Color) -> u32 {
+        // might be best used as discrete func later idk
+        self.bb_marker_color[Color::Black.index()].board(persp)
+            | self.bb_marker_color[Color::White.index()].board(persp)
+    }
+
+    pub fn bb_is_color(self, color: Color, persp: Color) -> u32 {
+        self.bb_marker_color[color.index()].board(persp)
+    }
+
+    pub fn bb_legal_landing_spaces(self, persp: Color) -> u32 {
+        let mut legal_landing = !self.bb_is_occupied(persp) // all empty points are legal
+        | (self.bb_is_color(persp, persp) & BB_CLOSEABLE) // closable points
+        | (self.bb_is_color(persp.reverse(), persp) & self.bb_singleton.board(persp)); // capturable points
+
+        if self.bar_count[persp.index()] != 0 {
+            // get out from bar
+            legal_landing &= 0x3F;
+            if legal_landing == 0 {
+                legal_landing = self.bb_is_color(persp.reverse(), persp);
+            }
+        } else {
+            // add spränga condition!
+        }
+        legal_landing
     }
 
     pub fn apply_move(&mut self, _move: Move) {

@@ -5,6 +5,7 @@ pub struct Bitboard {
     board: u32,
 }
 
+// Tought: change name to something like Perspective bitboard (pbb) to distinguish between it and the content/traditional bitboard (bb)
 impl Bitboard {
     pub fn new(board: u32, persp: Color) -> Self {
         let mut bb = Bitboard { board: 0 };
