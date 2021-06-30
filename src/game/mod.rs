@@ -12,3 +12,4 @@ pub mod color;
 pub mod gamestate;
 pub mod r#move;
 pub mod position;
+pub mod player_handler;
