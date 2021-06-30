@@ -19,7 +19,8 @@ fn marker_count_fmt(n: u8) -> String {
 }
 
 pub fn db_disp(board: [u8; 24]) {
-    print!("    BRÄDE!!!!! \n    
+    print!(
+        "    BRÄDE!!!!! \n    
     q  w  e  r  t  y  |  u  i  o  p  å  ^ \n
     {}{}{}{}{}{}|  {}{}{}{}{}{}\n
                       |                 W \n

@@ -1,6 +1,7 @@
 use super::color::*;
 
 pub const BB_CLOSEABLE: u32 = 0xDEADBEEF;
+pub const BB_FIRST_QUADRANT: u32 = 0x3F;
 pub struct Bitboard {
     board: u32,
 }

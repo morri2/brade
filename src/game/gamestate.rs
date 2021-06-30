@@ -2,7 +2,6 @@ use super::bb::{Bitboard, BB_CLOSEABLE};
 use super::color::*;
 use super::position::*;
 use super::r#move::*;
-pub type Point = usize;
 
 pub struct Gamestate {
     to_play: Color, // YEA I KNOW THIS SHOULD NOT BE A BOOL--- BUT FUCK OFF
@@ -31,6 +30,17 @@ impl Gamestate {
 
     pub fn marker_count(&self) -> [u8; 24] {
         self.marker_count
+    }
+
+    pub fn marker_color_at(&self, pos: Position, persp: Color) -> Option<Color>{
+        if let Position::Point(point) = pos {
+            if self.bb_marker_color[Color::White.index()].board(persp) << point != 0{
+                return Some(Color::White)
+            } else if self.bb_marker_color[Color::Black.index()].board(persp) << point != 0 {
+                return Some(Color::Black)
+            }
+        }
+        None
     }
 
     pub fn marker_count_at(&self, pos: Position, persp: Color) -> u8 {
@@ -66,22 +76,43 @@ impl Gamestate {
             if legal_landing == 0 {
                 legal_landing = self.bb_is_color(persp.reverse(), persp);
             }
-        } else { // THIS IS SUBOPTIMAL AND UNREADABLE FIX LATER LMAO
+        } else {
+            // THIS IS SUBOPTIMAL AND UNREADABLE FIX LATER LMAO
             let mut i = 0;
             let opp_closed = self.bb_is_color(persp.reverse(), persp);
             // add spränga condition!
             let mut sprangable: u32 = 0;
-            while i < 24 { // we can exclued the last one
+            while i < 24 {
+                // we can exclued the last one
                 if (opp_closed << i) & 0x3f == 0x3f {
                     sprangable |= 0x3f << i;
                     i += 1;
                 } else {
-                    i += u32::max(u32::trailing_zeros(opp_closed << i),1);
+                    i += u32::max(u32::trailing_zeros(opp_closed << i), 1);
                 }
             }
             legal_landing |= sprangable
         }
         legal_landing
+    }
+
+    pub fn bb_generate_legal_dests(&self, persp: Color) -> u32 {
+        let mut legal_landing = !self.bb_is_occupied(persp) // all empty points are legal
+        | (self.bb_is_color(persp, persp) & BB_CLOSEABLE) // closable points
+        | (self.bb_is_color(persp.reverse(), persp) & self.bb_singleton.board(persp)); // capturable points
+
+        if self.bar_count[persp.index()] != 0 {
+            let legal_dests = !self.bb_is_occupied(persp) // all empty points are legal
+            | (self.bb_is_color(persp.reverse(), persp) & self.bb_singleton.board(persp)) & 0b111111;
+            // get out from bar
+            if legal_dests != 0 {
+                legal_dests
+            } else {
+                self.bb_is_color(persp.reverse(), persp) & 0b111111
+            }
+        } else {
+            0 // Implement proper spräng for moving off the bar
+        }
     }
 
     pub fn apply_move(&mut self, _move: Move) {
