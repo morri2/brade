@@ -1,9 +1,7 @@
-pub enum Position{
+pub enum Position {
     Bar,
     Point(usize),
     Out,
 }
 
-impl Position{
-
-}
+impl Position {}
