@@ -8,6 +8,8 @@ const POINT_DATA_MASK: u128 = 0b11111;
 const MARKER_COUNT_MASK: u8 = 0b01111;
 const MARKER_COLOR_MASK: u8 = 0b10000;
 
+const SETUP_BOARD_DATA: u128 = (0b10000 + 15) * (23 * POINT_STEP) as u128 + 15;
+
 const HANDSOME_CHECK_MASK: u128 = 0xf << (23 * POINT_STEP)
     | 0xf << (22 * POINT_STEP)
     | 0xf << (21 * POINT_STEP)
@@ -49,6 +51,10 @@ impl Board {
         }
     }
 
+    pub fn new_setup() -> Self {
+        Self::new(SETUP_BOARD_DATA, Color::White, [0, 0], [0, 0])
+    }
+
     fn is_closable(pos: Position) -> bool {
         match pos {
             Position::Point(0..=10) => false,
@@ -76,7 +82,7 @@ impl Board {
         }
     }
 
-    fn get_marker_count(&self, pos: Position) -> u8 {
+    pub fn get_marker_count(&self, pos: Position) -> u8 {
         match pos {
             Position::Point(_) => (self.get_point_data(pos) * MARKER_COUNT_MASK) as u8,
             _ => 0,
@@ -91,7 +97,7 @@ impl Board {
         self.get_marker_count(pos) != 0
     }
 
-    fn get_color(&self, pos: Position) -> Option<Color> {
+    pub fn get_color(&self, pos: Position) -> Option<Color> {
         if self.is_occupied(pos) {
             if self.get_point_data(pos) & MARKER_COLOR_MASK == 0
             /*White is index 0*/

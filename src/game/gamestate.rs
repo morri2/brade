@@ -12,6 +12,14 @@ impl Gamestate {
     pub fn new(board: Board) -> Self {
         Gamestate { board }
     }
+
+    pub fn new_setup() -> Self {
+        Self::new(Board::new_setup())
+    }
+
+    pub fn clone_board(&self) -> Board {
+        self.board.clone()
+    }
     /*
 
         pub fn marker_color_at(&self, pos: Position, persp: Color) -> Option<Color>{
