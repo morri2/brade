@@ -9,5 +9,3 @@ pub const BB_FULL: Bitboard = 0b111111_111111_111111_111111;
 pub fn flip_persp(bb: Bitboard) -> Bitboard {
     ((bb << 12) | (bb >> 12)) & BB_FULL
 }
-
-
