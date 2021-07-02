@@ -1,36 +1,20 @@
-use super::bb::{Bitboard, BB_CLOSEABLE};
+use super::bitboard::*;
 use super::color::*;
 use super::position::*;
 use super::r#move::*;
+use super::board::*;
 
 pub struct Gamestate {
-    to_play: Color, // YEA I KNOW THIS SHOULD NOT BE A BOOL--- BUT FUCK OFF
-    marker_count: [u8; 24],
-    bar_count: [u8; 2], // [Player id]
-    bb_marker_color: [Bitboard; 2],
-    bb_singleton: Bitboard,
+    board: Board,
 }
 
 impl Gamestate {
-    pub fn new() -> Self {
-        let mut board = [0; 24];
-        board[0] = 15;
-        board[12] = 15;
+    pub fn new(board: Board) -> Self {
         Gamestate {
-            to_play: Color::White,
-            marker_count: board,
-            bar_count: [0, 0],
-            bb_marker_color: [
-                Bitboard::new(1, Color::White),
-                Bitboard::new(1, Color::Black),
-            ],
-            bb_singleton: Bitboard::new(0, Color::White),
+           board, 
         }
     }
-
-    pub fn marker_count(&self) -> [u8; 24] {
-        self.marker_count
-    }
+    /*
 
     pub fn marker_color_at(&self, pos: Position, persp: Color) -> Option<Color>{
         if let Position::Point(point) = pos {
@@ -61,39 +45,8 @@ impl Gamestate {
             | self.bb_marker_color[Color::White.index()].board(persp)
     }
 
-    pub fn bb_is_color(&self, color: Color, persp: Color) -> u32 {
+<    pub fn bb_is_color(&self, color: Color, persp: Color) -> u32 {
         self.bb_marker_color[color.index()].board(persp)
-    }
-
-    pub fn bb_legal_landing_spaces(&self, persp: Color) -> u32 {
-        let mut legal_landing = !self.bb_is_occupied(persp) // all empty points are legal
-        | (self.bb_is_color(persp, persp) & BB_CLOSEABLE) // closable points
-        | (self.bb_is_color(persp.reverse(), persp) & self.bb_singleton.board(persp)); // capturable points
-
-        if self.bar_count[persp.index()] != 0 {
-            // get out from bar
-            legal_landing &= 0x3F;
-            if legal_landing == 0 {
-                legal_landing = self.bb_is_color(persp.reverse(), persp);
-            }
-        } else {
-            // THIS IS SUBOPTIMAL AND UNREADABLE FIX LATER LMAO
-            let mut i = 0;
-            let opp_closed = self.bb_is_color(persp.reverse(), persp);
-            // add spränga condition!
-            let mut sprangable: u32 = 0;
-            while i < 24 {
-                // we can exclued the last one
-                if (opp_closed << i) & 0x3f == 0x3f {
-                    sprangable |= 0x3f << i;
-                    i += 1;
-                } else {
-                    i += u32::max(u32::trailing_zeros(opp_closed << i), 1);
-                }
-            }
-            legal_landing |= sprangable
-        }
-        legal_landing
     }
 
     pub fn bb_generate_legal_dests(&self, persp: Color) -> u32 {
@@ -130,4 +83,5 @@ impl Gamestate {
     fn apply_submove(&mut self, submove: &Submove) {}
 
     fn undo_submove(&mut self, submove: &Submove) {}
+    */
 }

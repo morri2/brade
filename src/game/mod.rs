@@ -7,7 +7,8 @@
 // - hold capture amt
 // Find leagal moves (tree?)
 
-pub mod bb;
+pub mod bitboard;
+pub mod board;
 pub mod color;
 pub mod gamestate;
 pub mod r#move;
