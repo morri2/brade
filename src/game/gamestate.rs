@@ -6,11 +6,16 @@ use super::r#move::*;
 
 pub struct Gamestate {
     board: Board,
+    history: Vec<Move>,
 }
 
 impl Gamestate {
     pub fn new(board: Board) -> Self {
-        Gamestate { board }
+        Gamestate {
+            board: board,
+            history: Vec::new(),
+
+         }
     }
 
     pub fn new_setup() -> Self {
