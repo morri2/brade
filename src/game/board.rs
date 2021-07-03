@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use super::color::*;
 use super::position::*;
 use super::r#move::*;
@@ -8,7 +9,7 @@ const POINT_DATA_MASK: u128 = 0b11111;
 const MARKER_COUNT_MASK: u8 = 0b01111;
 const MARKER_COLOR_MASK: u8 = 0b10000;
 
-const SETUP_BOARD_DATA: u128 = (0b10000 + 15) * (23 * POINT_STEP) as u128 + 15;
+const SETUP_BOARD_DATA:u128 = 0x1f00000000000000f;
 
 const HANDSOME_CHECK_MASK: u128 = 0xf << (23 * POINT_STEP)
     | 0xf << (22 * POINT_STEP)
@@ -52,10 +53,10 @@ impl Board {
     }
 
     pub fn new_setup() -> Self {
-        Self::new(SETUP_BOARD_DATA, Color::White, [0, 0], [0, 0])
+        Board{board_data: SETUP_BOARD_DATA,to_play: Color::White,bar: [0,0],out: [0,0]}
     }
 
-    fn is_closable(pos: Position) -> bool {
+    pub fn is_closable(pos: Position) -> bool {
         match pos {
             Position::Point(0..=10) => false,
             _ => true, // bar and out are closable just in case
@@ -65,11 +66,12 @@ impl Board {
     fn steps_to_out(pos: Position) -> usize {
         match pos {
             Position::Point(point) => 24 - point,
+            Position::Bar => 25,
             _ => 0,
         }
     }
 
-    fn flip(&mut self) {
+    pub fn flip(&mut self) {
         self.board_data = ((self.board_data >> 12 * POINT_STEP)
             | (self.board_data << 12 * POINT_STEP))
             & BOARD_MASK
@@ -84,7 +86,7 @@ impl Board {
 
     pub fn get_marker_count(&self, pos: Position) -> u8 {
         match pos {
-            Position::Point(_) => (self.get_point_data(pos) * MARKER_COUNT_MASK) as u8,
+            Position::Point(_) => (self.get_point_data(pos) & MARKER_COUNT_MASK) as u8,
             _ => 0,
         }
     }
@@ -116,9 +118,9 @@ impl Board {
     }
 
     fn set_point_data(&mut self, pos: Position, data: u8) {
+        let mut _i = 0;
         if let Position::Point(point) = pos {
-            let data = self.get_point_data(pos);
-            self.board_data &= !POINT_DATA_MASK << (POINT_STEP * point);
+            self.board_data &= !(POINT_DATA_MASK << (POINT_STEP * point));
             self.board_data |= (data as u128) << (POINT_STEP * point);
         }
     }
@@ -169,7 +171,7 @@ impl Board {
         self.set_marker_count(pos, count - d)
     }
 
-    fn get_bar(&self, color: Color) -> u8 {
+    pub fn get_bar(&self, color: Color) -> u8 {
         self.bar[color.index()]
     }
 
@@ -200,26 +202,26 @@ impl Board {
         self.get_bar(color) == 0
     }
 
-    fn is_legal_dest(&self, pos: Position, color: Color) -> bool {
-        if pos == Position::Out {
+    fn is_legal_dest(&self, dest: Position, color: Color) -> bool {
+        if dest == Position::Out {
             self.can_move_out(color)
-        } else if let Some(pcolor) = self.get_color(pos) {
+        } else if let Some(pcolor) = self.get_color(dest) {
             if pcolor == color {
-                return Board::is_closable(pos);
+                return Board::is_closable(dest);
             } else {
-                return self.is_singleton(pos) || false; /*SPRÄNGABLE!*/
+                return self.is_singleton(dest) || false; /*SPRÄNGABLE!*/
             }
         } else {
             true
         }
     }
 
-    fn is_legal_dest_from_bar(&self, pos: Position, color: Color) -> bool {
-        if let Some(pcolor) = self.get_color(pos) {
+    fn is_legal_dest_from_bar(&self, dest: Position, color: Color) -> bool {
+        if let Some(pcolor) = self.get_color(dest) {
             if pcolor == color {
-                return Board::is_closable(pos); // not acctually nessesery given standard ruleset
+                return Board::is_closable(dest); // not acctually nessesery given standard ruleset
             } else {
-                return self.is_singleton(pos) || false; /*SPRÄNGABLE! (from bar)*/
+                return self.is_singleton(dest) || false; /*SPRÄNGABLE! (from bar)*/
                 // obs diffrent from normal sprängable
             }
         } else {
@@ -261,14 +263,14 @@ impl Board {
         self.get_out(color) == 15
     }
 
-    fn is_handsome(&self, color: Color) -> bool {
+    fn is_handsome(&self, color: Color) -> bool { //TODO fix color check!
         self.board_data & HANDSOME_CHECK_MASK == HANDSOME_COND_3_3_3_3_3
             || self.board_data & HANDSOME_CHECK_MASK == HANDSOME_COND_5_5_5
             || self.board_data & HANDSOME_CHECK_MASK == HANDSOME_COND_3_5_7
             || self.board_data & HANDSOME_CHECK_MASK == HANDSOME_COND_15
     }
 
-    fn generate_legal_submoves(&self, dice: [usize; 2]) {
+    fn generate_legal_submoves(&self, dice: [usize; 2]) { 
         // make a tree?? :))
         let mut submoves: Vec<Submove> = Vec::new();
         let mut results: Vec<Board> = Vec::new();
@@ -302,7 +304,21 @@ impl Board {
         }
     }
 
-    fn apply_submove(&mut self, submove: Submove) {
+    pub fn is_legal_submove(&self, submove: Submove) -> bool{ //sudo legal?
+        // check/assert color == to_play // then add mover color to submove
+        if !self.bar_is_empty(self.to_play) {
+            if submove.src() != Position::Bar { return false }
+
+            return self.is_legal_dest_from_bar(submove.dest(), self.to_play)
+        } else {
+            if submove.src() == Position::Bar { return false } // fuze with is_color?
+            if !self.is_color(submove.src(), self.to_play) {return false}
+
+            return self.is_legal_dest(submove.dest(), self.to_play)
+        }
+    }
+
+    pub fn apply_submove(&mut self, submove: Submove) {
         match submove.src() {
             // decriment src pos
             Position::Bar => self.decrment_bar(self.to_play, 1),
@@ -310,7 +326,7 @@ impl Board {
             Position::Out => panic!("Atmepted submove from Out!"),
         }
 
-        assert_eq!(submove.captured(), self.get_marker_count(submove.dest())); // sussy behaviour
+        // assert_eq!(submove.captured(), self.get_marker_count(submove.dest())); // sussy behaviour
         self.capture(submove.dest()); // capture
 
         match submove.dest() {

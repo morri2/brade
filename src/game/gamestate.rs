@@ -25,6 +25,13 @@ impl Gamestate {
     pub fn clone_board(&self) -> Board {
         self.board.clone()
     }
+
+    pub fn apply_submove(&mut self, submove: Submove) {
+        self.board.apply_submove(submove);
+    }
+    pub fn flip(&mut self) {
+        self.board.flip();
+    }
     /*
 
         pub fn marker_color_at(&self, pos: Position, persp: Color) -> Option<Color>{
