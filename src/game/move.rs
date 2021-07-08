@@ -25,6 +25,14 @@ impl Submove {
         }
     }
 
+    pub fn new_debug() -> Self{
+        Self {
+            src: Position::Point(0),
+            dest: Position::Point(0),
+            captured: 0,
+        }
+    }
+
     pub fn src(&self) -> Position {
         self.src
     }
