@@ -10,6 +10,7 @@ impl Move {
     }
 }
 
+#[derive(Clone)]
 pub struct Submove {
     src: Position,
     dest: Position,

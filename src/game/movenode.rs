@@ -2,6 +2,7 @@ use std::ops::Sub;
 
 use super::r#move::*;
 
+#[derive(Clone)]
 pub struct Movetree {
     nodes: Vec<Movenode>,
     root_index: usize,
@@ -27,46 +28,48 @@ impl Movetree {
     }
 
     pub fn orphan_children(&mut self, parent_index: usize) {
-        self.nodes[parent_index].children_index = []
+        self.nodes[parent_index].children_index = Vec::new();
     }
 
-    pub fn orphan_siblings(&mut self, favourd_child_index: usize) {
-        if favourd_child_index == self.root_index { return; } // if this is root, DON'T!
+    pub fn orphan_siblings(&mut self, favoured_child_index: usize) {
+        if favoured_child_index == self.root_index { return; } // if this is root, DON'T!
 
-        let favourd_child = self.nodes[favourd_child_index];
-        let parent_index = favourd_child.parent_index;
+        let favoured_child = self.nodes[favoured_child_index].clone();
+        let parent_index = favoured_child.parent_index;
     
         self.orphan_children(parent_index);
-        self.add_child_to(favourd_child, parent_index);
+        self.add_child_to(favoured_child, parent_index);
     }
     
-    pub fn orphan_siblings_recursive(&mut self, favourd_child_index: usize) {
-        if favourd_child_index == self.root_index { return; } // if this is root, DON'T!
+    pub fn orphan_siblings_recursive(&mut self, favoured_child_index: usize) {
+        if favoured_child_index == self.root_index { return; } // if this is root, DON'T!
 
-        let favourd_child = self.nodes[favourd_child_index];
-        let parent_index = favourd_child.parent_index;
+        let favoured_child = self.nodes[favoured_child_index].clone();
+        let parent_index = favoured_child.parent_index;
     
         self.orphan_children(parent_index);
-        self.add_child_to(favourd_child, parent_index);
+        self.add_child_to(favoured_child, parent_index);
 
         // recursion
         self.orphan_siblings_recursive(parent_index);
     }
 
-    pub fn clone_without_orphans(&mut self, other: Self) -> Self{
+    pub fn clone_without_orphans(&mut self) -> Self{
         let mut new_tree = Self::new();
-        new_tree.copy_family_recursive(&mut self, new_tree.root_index, self.root_index);
+        new_tree.clone_without_orphans_inner(&self, new_tree.root_index, self.root_index);
         new_tree
     }
 
-    pub fn copy_family_recursive(&mut self, other: &mut Self, parent_index: usize, other_index: usize) {
+    fn clone_without_orphans_inner(&mut self, other: &Self, parent_index: usize, other_index: usize) {
+        // Recursively clones other into self (ignoring orphans).
         for other_child_index in other.nodes[other_index].children_index.iter() {
-            let new_child_index = self.add_child_to(other.nodes[*other_child_index], parent_index);
-            self.copy_family_recursive(other, new_child_index, other_index);
+            let new_child_index = self.add_child_to(other.nodes[*other_child_index].clone(), parent_index);
+            self.clone_without_orphans_inner(other, new_child_index, other_index);
         } 
     }
 }
 
+#[derive(Clone)]
 pub struct Movenode {
     parent_index: usize,
     submove: Submove,
